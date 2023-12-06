@@ -13,7 +13,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class MainActivity extends AppCompatActivity {
-    private String []tabHeaderStrings = {"Shopping items","baidu maps","News"};
+    private String []tabHeaderStrings = {"Shopping items","TC maps","News"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

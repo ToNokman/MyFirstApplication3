@@ -1,5 +1,4 @@
 package com.jnu.myfirstapplication3.data;
-
 import android.content.Context;
 import android.util.Log;
 
@@ -41,6 +40,4 @@ public class DataBank {
         }
 
     }
-
-
 }

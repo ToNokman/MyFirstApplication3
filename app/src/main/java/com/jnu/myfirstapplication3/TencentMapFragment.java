@@ -1,18 +1,22 @@
 package com.jnu.myfirstapplication3;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import com.jnu.myfirstapplication3.data.DataDownload;
+import com.jnu.myfirstapplication3.data.ShopLocation;
 import com.tencent.tencentmap.mapsdk.maps.CameraUpdateFactory;
 import com.tencent.tencentmap.mapsdk.maps.TencentMap;
 import com.tencent.tencentmap.mapsdk.maps.model.LatLng;
 import com.tencent.tencentmap.mapsdk.maps.model.Marker;
 import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,8 +24,9 @@ import com.tencent.tencentmap.mapsdk.maps.model.MarkerOptions;
  * create an instance of this fragment.
  */
 public class TencentMapFragment extends Fragment {
+    //    private MapView mMapView = null;
     private com.tencent.tencentmap.mapsdk.maps.MapView mapView = null;
-
+    private TencentMap TCMap;
     public TencentMapFragment() {
         // Required empty public constructor
     }
@@ -32,7 +37,7 @@ public class TencentMapFragment extends Fragment {
      * @return A new instance of fragment BaiduMapFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TencentMapFragment newInstance(String param1, String param2) {
+    public static TencentMapFragment newInstance() {
         TencentMapFragment fragment = new TencentMapFragment();
         Bundle args = new Bundle();
 
@@ -40,9 +45,32 @@ public class TencentMapFragment extends Fragment {
         return fragment;
     }
 
+    public class DataDownloadTask extends AsyncTask<String,Void,String> {
+        @Override
+        protected String doInBackground(String ... urls) {
+            return new DataDownload().download(urls[0]);
+        }
+        @Override
+        protected void onPostExecute(String responseData) {
+            super.onPostExecute(responseData);
+            if (responseData != null) {
+                ArrayList<ShopLocation> shopLocations= new DataDownload().parseJsonObjects(responseData);
+                TencentMap tencentMap = mapView.getMap();
+                for (ShopLocation shopLocation : shopLocations) {
+                    LatLng point1 = new LatLng(shopLocation.getLatitude(), shopLocation.getLongitude());
+                    MarkerOptions markerOptions = new MarkerOptions(point1)
+                            .title(shopLocation.getName());
+                    Marker marker = tencentMap.addMarker(markerOptions);
+                }
+            }
+        }
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+
+        }
     }
 
     @Override
@@ -51,8 +79,8 @@ public class TencentMapFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_tencent_map, container, false);
         mapView = rootView.findViewById(R.id.mapView);
-
-        TencentMap TCMap = mapView.getMap();
+        new DataDownloadTask().execute("http://file.nidama.net/class/mobile_develop/data/bookstore2023.json");
+        TCMap = mapView.getMap();
 //
         // 添加图标型Marker
         LatLng position1 = new LatLng(22.252731, 113.535649);//JNU坐标
@@ -70,18 +98,34 @@ public class TencentMapFragment extends Fragment {
         //显示信息窗口
         marker.showInfoWindow();
         //设置Marker点击事件
-        TCMap.setOnInfoWindowClickListener(new TencentMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                Log.i("TAG","InfoWindow被点击时回调函数");
+        new Thread(new Runnable() {
+            public void run() {
+                String responseData = new DataDownload().download("http://file.nidama.net/class/mobile_develop/data/bookstore.json");
+                ArrayList<ShopLocation> shopLocations = new DataDownload().parseJsonObjects(responseData);
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TencentMap tencentMap = mapView.getMap();
+                        for (ShopLocation shopLocation : shopLocations) {
+                            LatLng point = new LatLng(shopLocation.getLatitude(), shopLocation.getLongitude());
+                            MarkerOptions markerOptions = new MarkerOptions(point)
+                                    .title(shopLocation.getName());
+                            Marker marker = tencentMap.addMarker(markerOptions);
+
+
+                        }
+                    }
+                });
             }
-            @Override
-            public void onInfoWindowClickLocation(int width, int height, int x, int y) {
-                Log.i("TAG","当InfoWindow点击时，点击的回调");
-            }
-        });
+        }).start();
         return rootView;
     }
+//    MarkerOptions markerOptions = new MarkerOptions()
+//            .position(new LatLng(latitude, longitude))
+//            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+//            .title("Marker Title")
+//            .snippet("Marker Snippet");
+//    Marker marker = tencentMap.addMarker(markerOptions);
 
     @Override
     public void onStart() {
