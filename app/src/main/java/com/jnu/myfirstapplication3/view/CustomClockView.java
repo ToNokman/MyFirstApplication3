@@ -41,16 +41,16 @@ public class CustomClockView extends View {
         // 初始化画笔
         circlePaint = new Paint();
         circlePaint.setColor(Color.BLACK);
-        circlePaint.setStyle(Paint.Style.STROKE);
+        circlePaint.setStyle(Paint.Style.FILL_AND_STROKE);
         circlePaint.setStrokeWidth(5);
 
         hourHandPaint = new Paint();
-        hourHandPaint.setColor(Color.BLACK);
+        hourHandPaint.setColor(Color.YELLOW);
         hourHandPaint.setStyle(Paint.Style.FILL);
         hourHandPaint.setStrokeWidth(10);
 
         minuteHandPaint = new Paint();
-        minuteHandPaint.setColor(Color.BLACK);
+        minuteHandPaint.setColor(Color.GRAY);
         minuteHandPaint.setStyle(Paint.Style.FILL);
         minuteHandPaint.setStrokeWidth(5);
 
@@ -75,7 +75,6 @@ public class CustomClockView extends View {
         super.onDraw(canvas);
         // 绘制外圆
         canvas.drawCircle(centerX, centerY, radius, circlePaint);
-
         // 绘制刻度线
         for (int i = 0; i < 12; i++) {
             float angle = (float) (i * Math.PI / 6);
