@@ -1,6 +1,4 @@
 package com.jnu.myfirstapplication3.data;
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,7 +11,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class DataDownload {
-
     public String download(String url_)
     {
         try {
@@ -23,7 +20,6 @@ public class DataDownload {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             // 设置请求方法（GET、POST等）
             connection.setRequestMethod("GET");
-            // 设置连接和读取超时时间（可选）
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
             // 发起连接
@@ -34,7 +30,6 @@ public class DataDownload {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // 获取输入流
                 InputStream inputStream = connection.getInputStream();
-
                 // 读取输入流中的数据
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 StringBuilder stringBuilder = new StringBuilder();
@@ -43,17 +38,14 @@ public class DataDownload {
                     stringBuilder.append(line);
                 }
                 String responseData = stringBuilder.toString();
-
                 // 关闭输入流和连接
                 reader.close();
                 inputStream.close();
                 connection.disconnect();
-
                 // 返回下载的数据
                 return responseData;
             } else {
                 // 处理请求失败的情况
-                // ...
             }
         } catch (Exception e) {
             e.printStackTrace();
